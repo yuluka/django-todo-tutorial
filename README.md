@@ -240,31 +240,100 @@ Al crear un proyecto en Django, se genera una estructura de archivos que permite
 
     - Dentro de la carpeta de la aplicación ([`tasks/`](tasks/)), crea una nueva carpeta llamada `templates/`.
 
+    - Dentro de `templates/`, crea un archivo llamado `base.html`.
+
+    - Agrega el siguiente código a [`base.html`](tasks/templates/base.html):
+
+        ```html
+        <!DOCTYPE html>
+        <html lang="en">
+            <head>
+                {% load static %}
+
+                <meta charset="UTF-8"/>
+                <meta http-equiv="X-UA-Compatible" content="IE-edge" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+                <title>TO DO APP</title>
+
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+
+                <!-- <script src="{% static 'fontawesomefree/js/all.min.js' %}"></script> -->
+                <!-- jQuery, Popper.js, y Bootstrap JS -->
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+                <style>
+                    .sidebar {
+                        height: 100vh;
+                        width: 250px;
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        background: #343a40;
+                        padding-top: 20px;
+                    }
+                    .sidebar a {
+                        color: white;
+                        display: block;
+                        padding: 10px;
+                        text-decoration: none;
+                    }
+                    .sidebar a:hover {
+                        background: #495057;
+                    }
+                    .content {
+                        margin-left: 260px;
+                        padding: 20px;
+                    }
+                </style>
+            </head>
+
+            <body>
+                <div class="sidebar">
+                    <h4 class="text-white text-center">To-Do App</h4>
+                    <a href="">Ver Tareas</a>
+                    <a href="">Crear Tarea</a>
+                </div>
+            
+                <div class="content">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </body>
+        </html>
+        ```
+
     - Dentro de `templates/`, crea un archivo llamado `home.html`.
 
     - Agrega el siguiente código a [`home.html`](tasks/templates/home.html):
 
         ```html
+        {% extends "base.html" %}
+
+        {% block content %}
+
+
         <!DOCTYPE html>
         <html lang="es">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>TO DO APP</title>
-
+            
             <style>
-            body {
-                font-family: Arial, sans-serif;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                margin: 0;
-                background-color: #f4f4f4;
-            }
-            h1 {
-                color: #333;
-            }
+                body {
+                    font-family: Arial, sans-serif;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                    background-color: #f4f4f4;
+                }
+                h1 {
+                    color: #333;
+                }
             </style>
         </head>
         <body>
@@ -273,6 +342,8 @@ Al crear un proyecto en Django, se genera una estructura de archivos que permite
             </div>
         </body>
         </html>
+
+        {% endblock content %}
         ```
 
         > **Nota:** Puedes personalizar el diseño de la página agregando CSS, o usando bibliotecas de diseño como Bootstrap.
@@ -394,3 +465,57 @@ Al crear un proyecto en Django, se genera una estructura de archivos que permite
         ```
 
         > **Nota:** Con este comando haces que los cambios que registraste, con el comando anterior, se sincronicen. Es necesario ejecutar ambos comandos para que los cambios surtan efecto.
+
+    Una vez que hayas creado los modelos, y hayas ejecutado las migraciones, podrás revisar la BD que estés usando, y verás cómo se han creado las tablas para representarlos:
+
+    - Tabla `status`:
+
+        ![Tabla status](docs/images/status_table.png)
+
+    - Tabla `tasks`:
+        
+        ![Tabla tasks](docs/images/tasks_table.png)
+
+    Hecho esto, solo te falta agregar tus modelos al panel de administración. Para esto:
+
+    - Ve a [`admin.py`](tasks/admin.py).
+    
+    - Importa tus modelos:
+
+        ```python
+        from .models import Status, Task
+        ```
+
+    - Registra tus modelos:
+
+        ```python
+        admin.site.register(Status)
+        admin.site.register(Task)
+        ```
+
+8. Usar panel de administración
+
+    Ahora que ya tienes tus modelos de datos listos para la acción, puedes hacer uso del panel de administración que viene por defecto en Django.
+
+    Este panel es una interfaz web automática que permite gestionar los datos del proyecto sin necesidad de escribir código SQL. En este, puedes crear, editar y eliminar registros en la base de datos, administrar usuarios y permisos, y visualizar modelos de forma estructurada.
+
+    Para usarlo, debes crear un súper-usuario:
+
+    ```bash
+    python manage.py createsuperuser
+    ```
+
+    > **Nota:** Al ejecutar este comando, se te pedirá, por consola, una serie de datos que se usarán para la creación del super-usuario. Asegúrate de no olvidarlos.
+
+    ![Creación del superusuario](docs/images/superuser_creation.png)
+
+    Una vez que has creado el usuario, puedes dirgirte al panel de administración. Para ello, simplemente ejecuta el proyecto y dirígete a la ruta `/admin` (por ejemplo: `http://localhost:8000/admin/`). Allí, verás una página de inicio de sesión:
+
+    ![Admin login](docs/images/admin_login.png)
+
+    Al iniciar sesión, verás los modelos que Django incluye por defecto, y los que acabas de crear:
+
+    ![Admin panel](docs/images/admin_panel.png)
+
+    Explora este panel de administración y crea los estados en los que quieras que sea posible poner tus tareas.
+
