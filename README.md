@@ -208,11 +208,13 @@ Al crear un proyecto en Django, se genera una estructura de archivos que permite
     - Ir al [archivo de URLs principal](todo_app/urls.py).
 
     - Importar la función `include`:
+
         ```python
         from django.urls import path, include
         ```
     
     - Agregar un elemento a la lista `urlpatterns`, usando la función `include()`, de la siguiente manera:
+
         ```python
         path('', include(tasks.urls)),
         ```
@@ -242,38 +244,38 @@ Al crear un proyecto en Django, se genera una estructura de archivos que permite
 
     - Agrega el siguiente código a [`home.html`](tasks/templates/home.html):
 
-    ```html
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>TO DO APP</title>
+        ```html
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>TO DO APP</title>
 
-        <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f4;
-        }
-        h1 {
-            color: #333;
-        }
-        </style>
-    </head>
-    <body>
-        <div class="d-flex justify-content-center">
-            <h1>Aplicación To-Do</h1>
-        </div>
-    </body>
-    </html>
-    ```
+            <style>
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                background-color: #f4f4f4;
+            }
+            h1 {
+                color: #333;
+            }
+            </style>
+        </head>
+        <body>
+            <div class="d-flex justify-content-center">
+                <h1>Aplicación To-Do</h1>
+            </div>
+        </body>
+        </html>
+        ```
 
-    > **Nota:** Puedes personalizar el diseño de la página agregando CSS, o usando bibliotecas de diseño como Bootstrap.
+        > **Nota:** Puedes personalizar el diseño de la página agregando CSS, o usando bibliotecas de diseño como Bootstrap.
 
 6. Crear la URL para la página principal
 
@@ -285,17 +287,110 @@ Al crear un proyecto en Django, se genera una estructura de archivos que permite
 
     - Agrega el siguiente código:
 
-    ```python
-    from django.urls import path
-    from . import views
+        ```python
+        from django.urls import path
+        from . import views
 
-    urlpatterns = [
-        path('', views.home, name='home'),
-    ]
-    ```
+        urlpatterns = [
+            path('', views.home, name='home'),
+        ]
+        ```
 
     En este código, `path('', views.home, name='home')` define la URL raíz (`''`), que apunta a la vista home. De esta forma, se mostrará la Home Page cuando se acceda a la ruta raíz.
 
     Ahora ejecuta el proyecto, como lo hiciste antes, y asegúrate de que esté funcionando. Deberías ver algo así:
-    
+
     ![Home page](docs/images/basic_home_page.png)
+
+7. Crear modelo para Tareas
+
+    En este momento, tienes la base del proyecto. Ahora es momento de hacer la lógica del negocio de forma que no solo muestre un saludo de bienvenida, sino que puedas crear, actualizar y eliminar tus tareas.
+
+    Para esto:
+
+    - Ve al archivo [`models.py`](tasks/models.py).
+
+    - Crea los modelos que representarán las tareas y estados en la Base de Datos.
+
+        Modelo para representar el **estado** de una tarea:
+
+        ```python
+        class Status(models.Model):
+            id = models.AutoField(
+                primary_key=True,
+                null=False,
+                blank=False,
+            )
+
+            name = models.CharField(
+                max_length=100,
+                null=False,
+                blank=False,
+            )
+
+            def __str__(self):
+                return self.name
+        ```
+
+        Modelo para representar las **tareas**:
+
+        ```python
+        class Task(models.Model):
+            id = models.AutoField(
+                primary_key=True,
+                null=False,
+                blank=False,
+            )
+
+            name = models.CharField(
+                max_length=100,
+                null=False,
+                blank=False,
+            )
+
+            description = models.TextField(
+                null=True,
+                blank=True,
+            )
+            
+            created_at = models.DateTimeField(
+                auto_now_add=True,
+                null=False,
+                blank=False,
+            )
+
+            updated_at = models.DateTimeField(
+                auto_now=True,
+                null=False,
+                blank=False,
+            )
+            
+            deadline = models.DateTimeField(
+                null=True,
+                blank=True,
+            )
+
+            status_id = models.ForeignKey(
+                Status,
+                on_delete=models.CASCADE,
+                null=False,
+                blank=False,
+            )
+
+            def __str__(self):
+                return self.name
+        ```
+
+    - Ejecuta las migraciones para sincronizar los cambios en los modelos con la BD: 
+
+        ```bash
+        python manage.py makemigrations
+        ```
+
+        > **Nota:** Con este comando, creas las migraciones de los cambios que hayas hecho en los modelos. Eso significa que se crearán archivos para representarlas dentro de la carpeta `migrations/`.
+
+        ```bash
+        python manage.py migrate
+        ```
+
+        > **Nota:** Con este comando haces que los cambios que registraste, con el comando anterior, se sincronicen. Es necesario ejecutar ambos comandos para que los cambios surtan efecto.
