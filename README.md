@@ -292,8 +292,8 @@ Al crear un proyecto en Django, se genera una estructura de archivos que permite
             <body>
                 <div class="sidebar">
                     <h4 class="text-white text-center">To-Do App</h4>
-                    <a href="">Ver Tareas</a>
-                    <a href="">Crear Tarea</a>
+                    <a href="{% url 'list-tasks' %}">Ver Tareas</a>
+                    <a href="{% url 'create-task' %}">Crear Tarea</a>
                 </div>
             
                 <div class="content">
@@ -395,6 +395,7 @@ Al crear un proyecto en Django, se genera una estructura de archivos que permite
 
             name = models.CharField(
                 max_length=100,
+                unique=True,
                 null=False,
                 blank=False,
             )
@@ -519,3 +520,399 @@ Al crear un proyecto en Django, se genera una estructura de archivos que permite
 
     Explora este panel de administración y crea los estados en los que quieras que sea posible poner tus tareas.
 
+9. Crear funcionalidad de "Creación de Tareas"
+
+    Es momento de que le des a tu aplicación la funcionalidad básica para la creación de tareas pendientes.
+
+    El proceso para hacer esto es, esencialmente, el mismo que seguiste para poder renderizar la pantalla principal: 1) crear una vista que se encargue de procesar las solicitudes y devolver las respuestas, 2) crear el archivo `html` con el contenido que se renderizará, y 3) registrar la URL con la que se podrá acceder a la nueva pantalla.
+
+    De hecho, estos son los 3 pasos que tendrás que realizar para cada nueva pantalla que desees agregar.
+
+    - Crear vista:
+
+        Ve a [`views.py`](tasks/views.py) y define la vista con la que se renderizará la pantalla de creación de tareas:
+
+        ```python
+        def create_task(request):
+            if request.method == 'POST':
+                name: str = request.POST.get('task-name', '')
+                description: str = request.POST.get('task-description', '').strip()
+                status_id: Status = Status.objects.get(name='Pendiente')
+
+                deadline_str: str = request.POST.get('task-deadline', '').strip()
+                deadline: datetime.datetime = None
+
+                if deadline_str:
+                    try:
+                        deadline = datetime.datetime.strptime(deadline_str, '%Y-%m-%d')
+
+                    except ValueError:
+                        pass
+
+                Task.objects.create(
+                    name=name,
+                    description=description,
+                    deadline=deadline,
+                    status_id=status_id,
+                )
+
+                messages.success(request, '¡Tarea creada exitosamente!')
+
+                return redirect('list-tasks')
+
+            return render(request, 'create_task.html')
+        ```
+
+        En la vista anterior hay varios elementos nuevos que no están importados aún, por lo que se te marcarán como errores. Para solucionarlo, modifica los `imports` para que queden así:
+
+        ```python
+        import datetime
+        from django.shortcuts import render, redirect
+        from django.contrib import messages
+        from tasks.models import Task, Status
+        ```
+
+        Esta vista hace dos cosas distintas. En primer lugar, si la petición que le está llegando es del método GET (el que usa el navegador cuando accedes a una URL) simplemente renderiza la pantalla de creación de tareas. Por otro lado, si la petición que recibe es con el método POST (que será el que llegará cuando se haga click en el botón de `Crear Tarea`) se encargará de extraer los datos de la tarea y crearla dentro de la BD.
+
+    - Crear la pantalla HTML:
+
+        Para que la vista que creaste pueda mostrar algo, es necesario crear el template HTML. Para esto, ve a la [carpeta que contiene los templates](tasks/templates/) y crea un archivo con el nombre `create_task.html`.
+
+        Dentro de este archivo, pon el código:
+
+        ```html
+        {% extends "base.html" %}
+
+        {% block content %}
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <title>Crear Tarea</title>
+        </head>
+        <body class="bg-light">
+
+            <div class="container mt-5">
+                <h2 class="mb-4">Crear Nueva Tarea</h2>
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'create-task' %}">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="task-name" class="form-label">Nombre de la Tarea</label>
+                                <input type="text" class="form-control" id="task-name" name="task-name" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="task-description" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="task-description" name="task-description" rows="3"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="task-deadline" class="form-label">Fecha Límite</label>
+                                <input type="date" class="form-control" id="task-deadline" name="task-deadline">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Crear Tarea</button>
+                            <a href="{% url 'list-tasks' %}" class="btn btn-secondary">Cancelar</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </body>
+        </html>
+
+        {% endblock content %}
+        ```
+
+    - Registrar URL:
+
+        Ahora debes registrar la URL para poder acceder a la pantalla de creación de tareas. Para esto, ve al archivo de [URLs](tasks/urls.py) y agrega la ruta así:"
+
+        ```python
+        path('create-task/', views.create_task, name='create-task'),
+        ```
+
+    Tu página ya puede crear nuevas tareas en la base de datos. Sin embargo, el código tiene referencias a URLs que aún no existen (las que se usarán para los servicios que aún no has creado) por lo que obtendrás un error si tratas de ejecutarlo. Si deseas probarlo ahora, solo elimina las referencias a rutas que no existan (pero no olvides volver a agregarlas luego).
+
+10. Crear funcionalidad "Ver lista de Tareas"
+
+    Ahora tienes que crear una pantalla que te permita ver las tareas creadas hasta el momento, con su respectiva información. Para ello, debes repetir los pasos anteriores.
+
+    - Crear vista:
+
+        Ve a [`views.py`](tasks/views.py) y define la vista con la que se renderizará la pantalla de listado de tareas:
+
+        ```python
+        def list_tasks(request):
+            return render(request, 'list_tasks.html', {
+                'tasks': Task.objects.all(),
+            })
+        ```
+
+    - Crear la pantalla HTML:
+
+        Ve a [`templates/`](tasks/templates/) y crea un archivo con el nombre `list_tasks.html`.
+
+        Dentro de este archivo, pon el código:
+
+        ```html
+        {% extends "base.html" %}
+
+        {% block content %}
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <title>Lista de Tareas</title>
+        </head>
+        <body class="bg-light">
+
+            <div class="container mt-5">
+                <h2 class="mb-4">Lista de Tareas</h2>
+
+                {% if messages %}
+                    <div class="alert-container">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if tasks %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Estado</th>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Fecha Límite</th>
+                                    <th>Creado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for task in tasks %}
+                                <tr>
+                                    <td>{{ task.id }}</td>
+                                    <td>{{ task.status_id.name }}</td>
+                                    <td>{{ task.name }}</td>
+                                    <td>{{ task.description }}</td>
+                                    <td>{{ task.deadline|default:"No definida" }}</td>
+                                    <td>{{ task.created_at|date:"F j, Y, g:i A" }}</td>
+                                    <td>
+                                        <a href="{% url 'edit-task' task.id %}" class="btn btn-warning btn-sm">Editar</a>
+                                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-task-id="{{ task.id }}">
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">No hay tareas registradas.</div>
+                {% endif %}
+
+                <a href="{% url 'create-task' %}" class="btn btn-primary mt-3">Crear Nueva Tarea</a>
+            </div>
+
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Confirmar eliminación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>¿Estás seguro de que quieres eliminar esta tarea?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <form id="delete-form" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </form>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    var deleteModal = document.getElementById("deleteModal");
+
+                    deleteModal.addEventListener("show.bs.modal", function(event) {
+                        var button = event.relatedTarget;  
+                        var taskId = button.getAttribute("data-task-id");
+
+                        var form = document.getElementById("delete-form");
+                        form.action = `/delete-task/${taskId}/`;
+                    });
+                });
+            </script>
+
+        </body>
+        </html>
+        {% endblock content %}
+        ```
+
+    - Registrar URL:
+
+        Ve al archivo de [URLs](tasks/urls.py) y agrega la ruta así:"
+
+        ```python
+        path('list-tasks/', views.list_tasks, name='list-tasks'),
+        ```
+
+11. Crear funcionalidad "Editar tarea"
+
+        Ahora debes implementar una forma de editar las tareas que ya hayas creado.
+
+    - Crear vista:
+
+        Ve a [`views.py`](tasks/views.py) y define la vista con la que se renderizará la pantalla de edición de tareas:
+
+        ```python
+        def edit_task(request, task_id):
+            if request.method == 'POST':
+                task: Task = Task.objects.get(id=task_id)
+
+                task.name = request.POST.get('task-name', '')
+                task.description = request.POST.get('task-description', '').strip()
+                task.status_id = Status.objects.get(id=int(request.POST.get('task-status', 0)))
+
+                deadline_str: str = request.POST.get('task-deadline', '').strip()
+                deadline: datetime.datetime = None
+
+                if deadline_str:
+                    try:
+                        deadline = datetime.datetime.strptime(deadline_str, '%Y-%m-%d')
+
+                    except ValueError:
+                        pass
+
+                task.deadline = deadline
+                task.save()
+
+                messages.success(request, '¡Tarea actualizada exitosamente!')
+
+                return redirect('list-tasks')
+
+            return render(request, 'edit_task.html', {
+                'task': Task.objects.get(id=task_id),
+                'task_statuses': Status.objects.all(),
+            })
+        ```
+
+    - Crear la pantalla HTML:
+
+        Ve a [`templates/`](tasks/templates/) y crea un archivo con el nombre `edit_task.html`.
+
+        Dentro de este archivo, pon el código:
+
+        ```html
+        {% extends "base.html" %}
+
+        {% block content %}
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <title>Editar Tarea</title>
+        </head>
+        <body class="bg-light">
+
+            <div class="container mt-5">
+                <h2 class="mb-4">Editar Tarea</h2>
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'edit-task' task.id %}">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="task-status" class="form-label">Estado</label>
+                                <select class="form-select" id="task-status" name="task-status">
+                                    {% for status in task_statuses %}
+                                        <option value="{{ status.id }}" {% if status.id == task.status_id.id %}selected{% endif %}>{{ status.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="task-name" class="form-label">Nombre de la Tarea</label>
+                                <input type="text" class="form-control" id="task-name" name="task-name" value="{{ task.name }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="task-description" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="task-description" name="task-description" rows="3">{{ task.description }}</textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="task-deadline" class="form-label">Fecha Límite</label>
+                                <input type="date" class="form-control" id="task-deadline" name="task-deadline" value="{{ task.deadline|date:'Y-m-d' }}">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                            <a href="{% url 'list-tasks' %}" class="btn btn-secondary">Cancelar</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </body>
+        </html>
+
+        {% endblock content %}
+        ```
+
+    - Registrar URL:
+
+        Ve al archivo de [URLs](tasks/urls.py) y agrega la ruta así:"
+
+        ```python
+        path('edit-task/<int:task_id>/', views.edit_task, name='edit-task'),
+        ```
+
+12. Crear funcionalidad "Eliminar tarea"
+
+    La última funcionalidad que falta por crear es la de eliminar tareas.
+
+    - Crear vista:
+
+        Ve a [`views.py`](tasks/views.py) y define la vista que se encargará de la acción de eliminar tareas:
+
+        ```python
+        def delete_task(request, task_id):
+            Task.objects.get(id=task_id).delete()
+
+            messages.success(request, '¡Tarea eliminada exitosamente!')
+
+            return redirect('list-tasks')
+        ```
+
+    - Registrar URL:
+
+        Ve al archivo de [URLs](tasks/urls.py) y agrega la ruta así:
+
+        ```python
+        path('delete-task/<int:task_id>/', views.delete_task, name='delete-task'),
+        ```
+
+    Para esta funcionalida no es necesario crear un template nuevo, pues la parte gráfica que se encarga de la confirmación de la eliminación se encuentra dentro de [`list_tasks.html`](tasks/templates/list_tasks.html), en el modal que se ejecuta al presionar el botón `Eliminar` de una tarea.
+
+13. Prueba tu App
+
+    ¡Felicidades! Has terminado la aplicación.
+
+    Ejecuta el proyecto y explora lo que puedes hacer en él.
+
+    Anímate a agregarle nuevas funcionalidades y estilos a este proyecto.

@@ -11,6 +11,7 @@ class Status(models.Model):
 
     name = models.CharField(
         max_length=100,
+        unique=True,
         null=False,
         blank=False,
     )
