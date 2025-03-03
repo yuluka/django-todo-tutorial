@@ -369,7 +369,23 @@ Al crear un proyecto en Django, se genera una estructura de archivos que permite
 
     En este código, `path('', views.home, name='home')` define la URL raíz (`''`), que apunta a la vista home. De esta forma, se mostrará la Home Page cuando se acceda a la ruta raíz.
 
-    Ahora ejecuta el proyecto, como lo hiciste antes, y asegúrate de que esté funcionando. Deberías ver algo así:
+    Ahora ejecuta el proyecto, como lo hiciste antes, y asegúrate de que esté funcionando. Pero, antes, modifica las siguientes líneas del `base.html` que acabas de crear:
+
+    ```html
+    <a href="{% url 'list-tasks' %}">Ver Tareas</a>
+    <a href="{% url 'create-task' %}">Crear Tarea</a>
+    ```
+
+    para dejarlas así:
+    
+    ```html
+    <a href="">Ver Tareas</a>
+    <a href="">Crear Tarea</a>
+    ```
+
+    Debes hacer esto porque se está haciendo referencia a rutas que aún no existen por lo que, si ejecutas el proyecto, te saldrá un error. **No olvides** volver a agregar estas referencias cuando las hayas creado, para que los botones te lleven a las pantallas apropiadas al clicarlos.
+
+    Deberías ver algo así:
 
     ![Home page](docs/images/basic_home_page.png)
 
@@ -635,7 +651,7 @@ Al crear un proyecto en Django, se genera una estructura de archivos que permite
         path('create-task/', views.create_task, name='create-task'),
         ```
 
-    Tu página ya puede crear nuevas tareas en la base de datos. Sin embargo, el código tiene referencias a URLs que aún no existen (las que se usarán para los servicios que aún no has creado) por lo que obtendrás un error si tratas de ejecutarlo. Si deseas probarlo ahora, solo elimina las referencias a rutas que no existan (pero no olvides volver a agregarlas luego).
+    Tu página ya puede crear nuevas tareas en la base de datos. Sin embargo, el código tiene referencias a URLs que aún no existen (las que se usarán para los servicios que aún no has creado) por lo que obtendrás un error si tratas de ejecutarlo. Si deseas probarlo ahora, solo elimina las referencias a rutas que no existan (pero **no olvides** volver a agregarlas luego).
 
 10. Crear funcionalidad "Ver lista de Tareas"
 
