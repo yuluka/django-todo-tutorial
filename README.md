@@ -915,4 +915,26 @@ Al crear un proyecto en Django, se genera una estructura de archivos que permite
 
     Ejecuta el proyecto y explora lo que puedes hacer en él.
 
+    Al iniciarlo, verás la **_Home Page_**:
+
+    ![Home page](docs/images/home_page.png)
+
+    Allí puedes **_crear nuevas tareas_**:
+
+    ![Crear tarea](docs/images/create_task.png)
+
+    O **_ver las tareas que has creado_**, con su respectiva información:
+
+    ![Lista de tareas](docs/images/tasks_list.png)
+
+    También tienes la opción de **_editar_** tus tareas:
+
+    ![Editar tarea](docs/images/edit_task.png)
+
+    O **_eliminar_** las que ya no desees ver:
+
+    ![Eliminar tarea](docs/images/delete_task.png)
+    
+    ![Tarea eliminada](docs/images/deleted_task.png)
+
     Anímate a agregarle nuevas funcionalidades y estilos a este proyecto.
