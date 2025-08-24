@@ -1,12 +1,125 @@
 # Django TODO tutorial
 
+## Tabla de contenidos
+
+- [About](#about)
+- [Conceptualización](#conceptualización)
+  - [Qué es un Framework](#qué-es-un-framework)
+  - [Utilidad de los frameworks](#utilidad-de-los-frameworks)
+  - [Qué es Django](#qué-es-django)
+- [Pasos](#pasos)
+  - [Instalación de Python](#instalación-de-python)
+  - [Creación del proyecto](#creación-del-proyecto)
+  - [Archivos básicos de Django](#archivos-básicos-de-django)
+  - [Lógica del proyecto](#lógica-del-proyecto)
+
+---
+
 ## About
 
 En este repo encontrarás un ejemplo básico de cómo construir una aplicación web, usando el framework de Python **Django**, para la gestión de tareas por hacer.
 
 En este documento _README_ podrás ver los pasos que debes seguir para construir la aplicación por tu cuenta. 
 
+---
+
+## Conceptualización
+
+Seguramente ya sabes lo que es Python, y lo hasta puede que lo hayas usado en varios proyectos a largo de tu formación profesional. Sin embargo, puede que te preguntes qué es un **_framework_**, **_para qué sirve_**, y qué es **_Django_**.
+
+
+### Qué es un Framework
+
+Para inciar, un **_framework_** puede verse como una caja de herramientas ya preparada para construir software. En lugar de empezar desde cero cada vez que quieres crear una aplicación, un **framework te da piezas listas** (estructuras, librerías, buenas prácticas) para que te concentres en lo importante: la lógica de tu aplicación.  
+
+También, puedes entenderlo como una especie de **plantilla de trabajo**, que te dice cómo hacer u organizar ciertas partes de tus proyectos, y te otorga **utilidades** que facilitan las cosas enormemente.
+
+
+### Utilidad de los frameworks
+
+Por otro lado, los frameworks sirven para muchas cosas, como:
+
+- **Estandarizar** la forma de hacer tus proyectos (ej. estructuras, procesos, etc.).
+- **Ahorrarte esfuerzo**, pues suelen proveer código y funcionalidades ya hechas para tareas comunes (ej. autenticación, interacción con BD's, validación de estructuras de datos, etc.).
+- **Evitar errores comunes** en proyectos (ej. SQL Injection, manejo de sesiones, etc.).
+
+Estas ventajas no solo sirven para facilitarte la vida a la hora de desarrollar un proyecto, sino que proveen a tus aplicaciones de atributos de calidad, muy deseables en todo momento, como la escalabilidad o la mantenibilidad.
+
+
+### Qué es Django
+
+Por último, y debido a que este es el tema central de este tutorial, debes saber qué es **Django**.
+
+Django es un **framework web de Python**. Esto significa que te proporciona unas bases sólidas con todo lo que necesitas para crear aplicaciones web (como páginas web, APIs, sistemas de información) de forma rápida, sencilla, segura y ordenada.
+
+Es importante resaltar que Django es uno de los frameworks más conocidos y usados de Python. Es de código abierto (lo que significa que puedes ver su código y contribuir al [proyecto](https://github.com/django/django)), y se encuentra en funcionamiento desde julio de 2005.
+
+Cuenta con una **estructura definida**, soporta el **Modelo Vista Controlador** (MVC) en su propia versión llamada **Modelo Template Vista** (MTV), cuenta con **ORM integrado**, incluye **protección contra ataques comunes** (XSS, CSRF, SQL Injection), y tiene varias funcionalidades dentro de sí (**panel de administración**, **autenticación**, **manejo de sesiones**, etc.).
+
+---
+
 ## Pasos
+
+### Instalación de Python
+
+Antes de que te pongas manos a la obra con el proyecto, debes tener instalado el lenguaje de programación sobre el que funciona Django: Python. 
+
+0. Instalación de Python
+   
+   Esto es imprescindible para poder crear y ejecutar el proyecto.
+
+   Antes que nada, debes verificar si ya tienes instalado el lenguaje. Para ello, abre una terminal y ejecuta el siguiente comando:
+
+   ```bash
+   python --version
+   ```
+
+    Si ya lo tienes instalado, obtendrás un resultado como este:
+
+    ```bash
+    Python 3.x.x
+    ```
+
+    > **Nota**: Si Python ya está instalado en tu dispositivo, puedes saltarte todo este paso de instalación e ir al [siguiente](#creación-del-proyecto).
+
+    Si no obtienes algo así, significa que debes instalar Python. Para hacerlo:
+    
+    - Dirígete a la sección de instalación del lenguaje (en su [página oficial](https://www.python.org)) correspondiente al Sistema Operativo que estés usando:
+
+        - [Windows](https://www.python.org/downloads/windows)
+        - [Linux/Unix](https://www.python.org/downloads/source)
+        - [macOS](https://www.python.org/downloads/macos)
+    
+    - Descarga el instalador de la versión que prefieras.
+
+        Por lo general, es recomendable usar la versión estable más actual, pero eso dependerá de tus necesidades personales y profesionales. 
+
+        > **Nota**: Siempre puedes tener varias versiones de Python en el mismo dispositivo y usar la que más te convenga en cada momento.
+
+    - Ejecuta el instalador descargado.
+
+        El instalador, como su nombre lo dice, instalará el lenguaje en tu dispositivo. Al ejecutarlo, se iniciará el proceso con esta ventana:
+
+        ![Instalador Python](docs/images/python_installer1.png)
+
+        > **Nota**: La casilla **"Add python.exe to PATH"** debes marcarla SOLO si no tenías Python instalado antes. En caso de que estés instalado una versión distinta a la que tienes actualmente, asegúrate de dejarla sin marcar. En caso de que no lo tuvieras instalado antes, es muy importante que la marques.
+
+        Después de eso, presiona donde dice **"Install Now"**. Eso te mostrará algo así:
+
+        ![Instalador Python](docs/images/python_installer2.png)
+
+        Al terminar, verás:
+
+        ![Instalador Python](docs/images/python_installer3.png)
+
+    
+    Con esto ya tendrías Python instalado. Puedes verificarlo abriendo una nueva terminal y ejecutando:
+
+    ```bash
+   python --version
+   ```
+
+---
 
 ### Creación del proyecto
 
