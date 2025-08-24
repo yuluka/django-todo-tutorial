@@ -34,6 +34,7 @@ Para inciar, un **_framework_** puede verse como una caja de herramientas ya pre
 
 También, puedes entenderlo como una especie de **plantilla de trabajo**, que te dice cómo hacer u organizar ciertas partes de tus proyectos, y te otorga **utilidades** que facilitan las cosas enormemente.
 
+---
 
 ### Utilidad de los frameworks
 
@@ -45,6 +46,7 @@ Por otro lado, los frameworks sirven para muchas cosas, como:
 
 Estas ventajas no solo sirven para facilitarte la vida a la hora de desarrollar un proyecto, sino que proveen a tus aplicaciones de atributos de calidad, muy deseables en todo momento, como la escalabilidad o la mantenibilidad.
 
+---
 
 ### Qué es Django
 
