@@ -331,7 +331,7 @@ Al crear un proyecto en Django, se genera una estructura de archivos que permite
     - Agregar un elemento a la lista `urlpatterns`, usando la función `include()`, de la siguiente manera:
 
         ```python
-        path('', include(tasks.urls)),
+        path('', include('tasks.urls')),
         ```
 
 4. Crear vista incial
